@@ -152,6 +152,33 @@ public class HashedDictionaryOpenAddressingDoubleInstrumented<K,V> implements Di
         return val;
     } // end getHashIndex
     
+// ADD IN CODE FOR THE SECOND HASH FUNCION
+//>>>>>>>>>>>>> ADDED CODE >>>>>>>>>>>>>>
+    private int getSecondHashIndex(K key){
+        int val = key.toString().hashCode();
+        val = Math.abs(val);
+        val = val % hashTable.length;
+        if (val == 0)
+        {
+            val++;
+        }
+        
+        while (findGCD(val, hashTable.length) != 1){
+            val += 2;
+        }
+        return val;
+        
+    
+    } // end getHashIndex
+    
+    private int findGCD(long l1, long l2) {
+    //end recursion
+    if(l2 == 0){
+        return 1;
+    }
+    return findGCD(l2, l1%l2);
+}
+//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
     
     @Override
     public V getValue(K key)
@@ -195,6 +222,14 @@ public class HashedDictionaryOpenAddressingDoubleInstrumented<K,V> implements Di
     private int locate(int index, K key)
     {
         boolean found = false;
+
+// MODIFY THIS FOR DOUBLE HASHING
+//>>>>>>>>>>>>> ADDED CODE >>>>>>>>>>>>>>
+        // First compute the second hash value
+        int val = getSecondHashIndex(key);
+        
+        
+//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
         
         while ( !found && (hashTable[index] != null) )
         {
@@ -202,9 +237,28 @@ public class HashedDictionaryOpenAddressingDoubleInstrumented<K,V> implements Di
                 key.equals(hashTable[index].getKey()) )
                     found = true; // key found
             else // follow probe sequence
-                index = (index + 1) % hashTable.length; // Linear probing
+                
+//>>>>>>>>>>>>> MODIFIED THE FOLOWING FOR DOUBLE PROBING >>>>>>>>>>>
+            {
+              index = (index + val) % hashTable.length; // Linear probing
+            }
+//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+                
+//>>>>>>>>>>>>> ADDED CODE to increase total probing >>>>>>>>>>>>>>
+          
+
+
+//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<          
+                
+                
         } // end while
         
+        
+//>>>>>>>>>>>>> ADDED CODE to increase total probing if not found >>>>>>>>>
+       
+
+
+//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
         // Assertion: Either key or  null is found at hashTable[index]
         int result = -1;
         
@@ -255,6 +309,15 @@ public class HashedDictionaryOpenAddressingDoubleInstrumented<K,V> implements Di
     // Precondition: checkInitialization has been called.
     private int probe(int index, K key) {
         boolean found = false;
+        
+        // MODIFY THIS FOR DOUBLE HASHING
+//>>>>>>>>>>>>> ADDED CODE >>>>>>>>>>>>>>
+        // First compute the second hash value
+        int val = getSecondHashIndex(key);
+        
+        
+//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+        
         int removedStateIndex = -1; // Index of first location in
         // removed state
 
@@ -264,7 +327,7 @@ public class HashedDictionaryOpenAddressingDoubleInstrumented<K,V> implements Di
                     found = true; // Key found
                 } else // Follow probe sequence
                 {
-                    index = (index + 1) % hashTable.length; // Linear probing
+                    index = (index + val) % hashTable.length; // Linear probing
                 }
             } else // Skip entries that were removed
             {
@@ -272,8 +335,17 @@ public class HashedDictionaryOpenAddressingDoubleInstrumented<K,V> implements Di
                 if (removedStateIndex == -1) {
                     removedStateIndex = index;
                 }
-                index = (index + 1) % hashTable.length; // Linear probing
+                
+////// Modify the following for Double probing  ////////////
+                index = (index + val) % hashTable.length; // Linear probing
+////////////////////////////////
             } // end if
+            
+//>>>>>>>>>>>>> ADDED CODE to increase total probing >>>>>>>>>>>>>>
+       
+
+
+//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< 
         } // end while
         
         
